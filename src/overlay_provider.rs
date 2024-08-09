@@ -8,7 +8,7 @@ use windows::{
     },
 };
 
-use crate::VIDEO_EXTENSIONS;
+use crate::{log, VIDEO_EXTENSIONS};
 
 #[implement(IShellIconOverlayIdentifier)]
 pub struct WatchedOverlay;
@@ -17,6 +17,7 @@ impl IShellIconOverlayIdentifier_Impl for WatchedOverlay_Impl {
     fn IsMemberOf(&self, pwszpath: &PCWSTR, _dwattrib: u32) -> Result<()> {
         let path = unsafe { pwszpath.to_string()? };
         let ext = path.rsplit_once('.').unwrap_or_default().1;
+        log!("IsMemberOf {path} {ext}");
 
         let is_video = VIDEO_EXTENSIONS.contains(&ext);
         match is_video {
@@ -32,6 +33,7 @@ impl IShellIconOverlayIdentifier_Impl for WatchedOverlay_Impl {
         pindex: *mut i32,
         pdwflags: *mut u32,
     ) -> Result<()> {
+        log!("GetOverlayInfo");
         let icon = "V:\\Programming\\Projects\\last-watched\\icon.ico\0";
         let icon = icon.encode_utf16().collect::<Vec<_>>();
 
