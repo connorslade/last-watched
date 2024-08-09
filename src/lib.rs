@@ -2,7 +2,7 @@ use std::{ffi::c_void, panic, process};
 
 use registry::{register_clsid, unregister_clsid};
 use windows::Win32::{
-    Foundation::{CLASS_E_CLASSNOTAVAILABLE, HANDLE, HINSTANCE, MAX_PATH, S_FALSE, S_OK},
+    Foundation::{CLASS_E_CLASSNOTAVAILABLE, HANDLE, HINSTANCE, MAX_PATH, S_OK},
     System::{
         Com::IClassFactory,
         LibraryLoader::GetModuleFileNameW,
@@ -22,7 +22,7 @@ use provider_factory::WatchedOverlayFactory;
 const VIDEO_EXTENSIONS: &[&str] = &["mp4", "mkv", "avi", "webm", "flv", "mov", "wmv"];
 
 // {172d5af2-6916-48d3-a611-368273076434}
-pub const OVERLAY_CLSID: GUID = GUID::from_u128(0xf25a2d17_1669_d348_a611_368273076434);
+pub const OVERLAY_CLSID: GUID = GUID::from_u128(0x172d5af2_6916_48d3_a611_368273076434);
 // {88ac94e51a82074b8c44da15204fe239}
 pub const MKV_GUID: GUID = GUID::from_u128(0x88ac94e5_1a82_074b_8c44_da15204fe239);
 

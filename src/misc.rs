@@ -3,7 +3,7 @@ use std::iter;
 #[macro_export]
 macro_rules! log {
     ($($arg:tt)*) => {unsafe{
-        let msg = $crate::misc::to_pcstr(&format!($($arg)*));
+        let msg = $crate::misc::to_pcstr(&format!("[{}:{}] {}", module_path!(), line!(), format!($($arg)*)));
         windows::Win32::System::Diagnostics::Debug::OutputDebugStringA(windows::core::PCSTR(msg.as_ptr()));
     }};
 }
