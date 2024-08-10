@@ -1,11 +1,11 @@
 use std::{ffi::c_void, panic, process};
 
+use misc::get_module_path;
 use registry::{register_clsid, unregister_clsid};
 use windows::Win32::{
     Foundation::{CLASS_E_CLASSNOTAVAILABLE, HANDLE, HINSTANCE, MAX_PATH, S_OK},
     System::{
         Com::IClassFactory,
-        LibraryLoader::GetModuleFileNameW,
         ProcessStatus::GetProcessImageFileNameA,
         SystemServices::{DLL_PROCESS_ATTACH, DLL_PROCESS_DETACH},
     },
@@ -61,7 +61,6 @@ unsafe extern "system" fn DllGetClassObject(
     riid: *const GUID,
     ppv: *mut *mut c_void,
 ) -> HRESULT {
-    log!("DllGetClassObject {:?}, {:?}", *rclsid, *riid);
     if *rclsid == OVERLAY_CLSID {
         let factory = IClassFactory::from(WatchedOverlayFactory);
         factory.query(riid, ppv)
@@ -72,13 +71,11 @@ unsafe extern "system" fn DllGetClassObject(
 
 #[no_mangle]
 unsafe extern "system" fn DllCanUnloadNow() -> HRESULT {
-    log!("DllCanUnloadNow");
     S_OK
 }
 
 #[no_mangle]
 unsafe extern "system" fn DllRegisterServer() -> HRESULT {
-    log!("DllRegisterServer");
     let module_path = get_module_path(INSTANCE);
     register_clsid(&module_path, OVERLAY_CLSID).unwrap();
     SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, None, None);
@@ -87,14 +84,7 @@ unsafe extern "system" fn DllRegisterServer() -> HRESULT {
 
 #[no_mangle]
 unsafe extern "system" fn DllUnregisterServer() -> HRESULT {
-    log!("DllUnregisterServer");
     unregister_clsid(OVERLAY_CLSID).unwrap();
     SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, None, None);
     S_OK
-}
-
-unsafe fn get_module_path(instance: HINSTANCE) -> String {
-    let mut path = [0u16; MAX_PATH as usize];
-    let len = GetModuleFileNameW(instance, &mut path);
-    String::from_utf16_lossy(&path[..len as usize])
 }

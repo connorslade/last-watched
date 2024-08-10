@@ -1,5 +1,10 @@
 use std::iter;
 
+use windows::Win32::{
+    Foundation::{HINSTANCE, MAX_PATH},
+    System::LibraryLoader::GetModuleFileNameW,
+};
+
 #[macro_export]
 macro_rules! log {
     ($($arg:tt)*) => {{
@@ -10,4 +15,10 @@ macro_rules! log {
 
 pub fn to_pcstr(s: &str) -> Vec<u8> {
     s.bytes().chain(iter::once(0)).collect()
+}
+
+pub unsafe fn get_module_path(instance: HINSTANCE) -> String {
+    let mut path = [0u16; MAX_PATH as usize];
+    let len = GetModuleFileNameW(instance, &mut path);
+    String::from_utf16_lossy(&path[..len as usize])
 }
