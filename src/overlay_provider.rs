@@ -1,16 +1,24 @@
-use std::{fs, iter, path::Path};
+use std::{fs, iter, os::windows::ffi::OsStrExt, path::Path};
 
 use windows::{
     core::{implement, Error, Result, PCWSTR, PWSTR},
     Win32::{
         Foundation::{ERROR_INSUFFICIENT_BUFFER, S_FALSE},
+        Storage::FileSystem::{
+            GetFileAttributesW, SetFileAttributesW, FILE_ATTRIBUTE_HIDDEN,
+            FILE_FLAGS_AND_ATTRIBUTES,
+        },
         UI::Shell::{
             IShellIconOverlayIdentifier, IShellIconOverlayIdentifier_Impl, ISIOI_ICONFILE,
         },
     },
 };
 
-use crate::{log, VIDEO_EXTENSIONS};
+use crate::{
+    log,
+    misc::{get_module_path, to_pcwstr},
+    INSTANCE, VIDEO_EXTENSIONS,
+};
 
 #[implement(IShellIconOverlayIdentifier)]
 pub struct WatchedOverlay;
@@ -36,7 +44,23 @@ impl IShellIconOverlayIdentifier_Impl for WatchedOverlay_Impl {
 
         let sidecar = parent.join(".watched");
         if !sidecar.exists() {
-            return IsMemberOfResult::Member.into();
+            return IsMemberOfResult::NotMember.into();
+        }
+
+        // Make sure the sidecar is hidden
+        unsafe {
+            let string = to_pcwstr(&sidecar.to_string_lossy());
+            let pcwstr = PCWSTR(string.as_ptr());
+
+            let attributes = GetFileAttributesW(pcwstr);
+            let is_hidden = attributes & FILE_ATTRIBUTE_HIDDEN.0 != 0;
+
+            if !is_hidden {
+                SetFileAttributesW(
+                    pcwstr,
+                    FILE_FLAGS_AND_ATTRIBUTES(attributes) | FILE_ATTRIBUTE_HIDDEN,
+                )?;
+            }
         }
 
         // TODO: cache the content
@@ -57,8 +81,15 @@ impl IShellIconOverlayIdentifier_Impl for WatchedOverlay_Impl {
         pdwflags: *mut u32,
     ) -> Result<()> {
         log!("GetOverlayInfo");
-        let icon = r"V:\Programming\Projects\last-watched\icon.ico";
-        let icon = icon.encode_utf16().chain(iter::once(0)).collect::<Vec<_>>();
+        let icon = Path::new(&unsafe { get_module_path(INSTANCE) })
+            .parent()
+            .unwrap()
+            .join("icon.ico");
+        let icon = icon
+            .as_os_str()
+            .encode_wide()
+            .chain(iter::once(0))
+            .collect::<Vec<_>>();
 
         unsafe {
             if cchmax < icon.len() as i32 {
@@ -81,9 +112,9 @@ impl IShellIconOverlayIdentifier_Impl for WatchedOverlay_Impl {
     }
 }
 
-impl Into<Result<()>> for IsMemberOfResult {
-    fn into(self) -> Result<()> {
-        match self {
+impl From<IsMemberOfResult> for Result<()> {
+    fn from(result: IsMemberOfResult) -> Result<()> {
+        match result {
             IsMemberOfResult::Member => Ok(()),
             IsMemberOfResult::NotMember => Err(Error::from_hresult(S_FALSE)),
         }
