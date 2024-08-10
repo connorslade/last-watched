@@ -222,17 +222,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "last-watched"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "guid",
- "windows",
- "windows-core",
- "winreg",
-]
-
-[[package]]
 name = "libc"
 version = "0.2.155"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -318,6 +307,17 @@ name = "rustc-demangle"
 version = "0.1.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "719b953e2095829ee67db738b3bfa9fa368c94900df327b3f07fe6e794d2fe1f"
+
+[[package]]
+name = "shell_extention"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "guid",
+ "windows",
+ "windows-core",
+ "winreg",
+]
 
 [[package]]
 name = "syn"

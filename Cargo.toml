@@ -1,12 +1,8 @@
-[package]
-name = "last-watched"
-version = "0.1.0"
-edition = "2021"
+[workspace]
+members = ["shell_extention"]
+resolver = "2"
 
-[lib]
-crate-type = ["cdylib"]
-
-[dependencies]
+[workspace.dependencies]
 anyhow = "1.0.86"
 guid = "0.1.0"
 windows = { version = "0.58.0", features = [
