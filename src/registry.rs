@@ -31,8 +31,9 @@ pub fn unregister_clsid(guid: GUID) -> Result<()> {
         RegKey::predef(HKEY_CLASSES_ROOT).open_subkey_with_flags("CLSID", KEY_ALL_ACCESS)?;
     clsid.delete_subkey(&guid)?;
 
-    let (overlays, _) = RegKey::predef(HKEY_LOCAL_MACHINE).create_subkey(
+    let overlays = RegKey::predef(HKEY_LOCAL_MACHINE).open_subkey_with_flags(
         r"Software\Microsoft\Windows\CurrentVersion\Explorer\ShellIconOverlayIdentifiers",
+        KEY_ALL_ACCESS,
     )?;
     overlays.delete_subkey(&guid)?;
 

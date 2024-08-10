@@ -1,4 +1,4 @@
-use std::iter;
+use std::{fs, iter, path::Path};
 
 use windows::{
     core::{implement, Error, Result, PCWSTR, PWSTR},
@@ -15,17 +15,38 @@ use crate::{log, VIDEO_EXTENSIONS};
 #[implement(IShellIconOverlayIdentifier)]
 pub struct WatchedOverlay;
 
+enum IsMemberOfResult {
+    Member,
+    NotMember,
+}
+
 impl IShellIconOverlayIdentifier_Impl for WatchedOverlay_Impl {
     fn IsMemberOf(&self, pwszpath: &PCWSTR, _dwattrib: u32) -> Result<()> {
         let path = unsafe { pwszpath.to_string()? };
         let ext = path.rsplit_once('.').unwrap_or_default().1;
-        log!("IsMemberOf {path} {ext}");
 
-        let is_video = VIDEO_EXTENSIONS.contains(&ext);
-        match is_video {
-            true => Ok(()),
-            false => Err(Error::from_hresult(S_FALSE)),
+        if !VIDEO_EXTENSIONS.contains(&ext) {
+            return IsMemberOfResult::NotMember.into();
         }
+
+        let path = Path::new(&path);
+        let Some(parent) = path.parent() else {
+            return IsMemberOfResult::NotMember.into();
+        };
+
+        let sidecar = parent.join(".watched");
+        if !sidecar.exists() {
+            return IsMemberOfResult::Member.into();
+        }
+
+        // TODO: cache the content
+        let file = fs::read_to_string(sidecar)?;
+        let filename = path.file_name().unwrap();
+        if file.lines().any(|line| line == filename) {
+            return IsMemberOfResult::Member.into();
+        }
+
+        IsMemberOfResult::NotMember.into()
     }
 
     fn GetOverlayInfo(
@@ -57,5 +78,14 @@ impl IShellIconOverlayIdentifier_Impl for WatchedOverlay_Impl {
 
     fn GetPriority(&self) -> Result<i32> {
         Ok(0)
+    }
+}
+
+impl Into<Result<()>> for IsMemberOfResult {
+    fn into(self) -> Result<()> {
+        match self {
+            IsMemberOfResult::Member => Ok(()),
+            IsMemberOfResult::NotMember => Err(Error::from_hresult(S_FALSE)),
+        }
     }
 }

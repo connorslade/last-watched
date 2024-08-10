@@ -1,6 +1,5 @@
 use std::{ffi::c_void, panic, process};
 
-use misc::get_module_path;
 use registry::{register_clsid, unregister_clsid};
 use windows::Win32::{
     Foundation::{CLASS_E_CLASSNOTAVAILABLE, HANDLE, HINSTANCE, MAX_PATH, S_OK},
@@ -17,6 +16,7 @@ mod misc;
 mod overlay_provider;
 mod provider_factory;
 mod registry;
+use misc::get_module_path;
 use provider_factory::WatchedOverlayFactory;
 
 const VIDEO_EXTENSIONS: &[&str] = &["mp4", "mkv", "avi", "webm", "flv", "mov", "wmv"];
