@@ -23,8 +23,6 @@ const VIDEO_EXTENSIONS: &[&str] = &["mp4", "mkv", "avi", "webm", "flv", "mov", "
 
 // {172d5af2-6916-48d3-a611-368273076434}
 pub const OVERLAY_CLSID: GUID = GUID::from_u128(0x172d5af2_6916_48d3_a611_368273076434);
-// {88ac94e5-1a82-074b-8c44-da15204fe239}
-pub const MKV_GUID: GUID = GUID::from_u128(0x88ac94e5_1a82_074b_8c44_da15204fe239);
 
 static mut INSTANCE: HINSTANCE = HINSTANCE(0 as _);
 
@@ -63,8 +61,8 @@ unsafe extern "system" fn DllGetClassObject(
     riid: *const GUID,
     ppv: *mut *mut c_void,
 ) -> HRESULT {
-    log!("DllGetClassObject {rclsid:?}");
-    if *rclsid == MKV_GUID {
+    log!("DllGetClassObject {:?}, {:?}", *rclsid, *riid);
+    if *rclsid == OVERLAY_CLSID {
         let factory = IClassFactory::from(WatchedOverlayFactory);
         factory.query(riid, ppv)
     } else {

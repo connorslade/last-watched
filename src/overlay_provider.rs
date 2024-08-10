@@ -1,3 +1,5 @@
+use std::iter;
+
 use windows::{
     core::{implement, Error, Result, PCWSTR, PWSTR},
     Win32::{
@@ -34,8 +36,8 @@ impl IShellIconOverlayIdentifier_Impl for WatchedOverlay_Impl {
         pdwflags: *mut u32,
     ) -> Result<()> {
         log!("GetOverlayInfo");
-        let icon = "V:\\Programming\\Projects\\last-watched\\icon.ico\0";
-        let icon = icon.encode_utf16().collect::<Vec<_>>();
+        let icon = r"V:\Programming\Projects\last-watched\icon.ico";
+        let icon = icon.encode_utf16().chain(iter::once(0)).collect::<Vec<_>>();
 
         unsafe {
             if cchmax < icon.len() as i32 {
