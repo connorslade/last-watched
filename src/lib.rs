@@ -23,7 +23,7 @@ const VIDEO_EXTENSIONS: &[&str] = &["mp4", "mkv", "avi", "webm", "flv", "mov", "
 
 // {172d5af2-6916-48d3-a611-368273076434}
 pub const OVERLAY_CLSID: GUID = GUID::from_u128(0x172d5af2_6916_48d3_a611_368273076434);
-// {88ac94e51a82074b8c44da15204fe239}
+// {88ac94e5-1a82-074b-8c44-da15204fe239}
 pub const MKV_GUID: GUID = GUID::from_u128(0x88ac94e5_1a82_074b_8c44_da15204fe239);
 
 static mut INSTANCE: HINSTANCE = HINSTANCE(0 as _);
@@ -35,8 +35,8 @@ unsafe extern "system" fn DllMain(
     _reserved: *mut (),
 ) -> bool {
     let mut buf = [0u8; MAX_PATH as usize];
-    GetProcessImageFileNameA(HANDLE(usize::MAX as *mut c_void), &mut buf);
-    let name = String::from_utf8_lossy(&buf);
+    let len = GetProcessImageFileNameA(HANDLE(usize::MAX as *mut c_void), &mut buf);
+    let name = String::from_utf8_lossy(&buf[..len as usize]);
 
     match call_reason {
         DLL_PROCESS_ATTACH => {
@@ -97,6 +97,6 @@ unsafe extern "system" fn DllUnregisterServer() -> HRESULT {
 
 unsafe fn get_module_path(instance: HINSTANCE) -> String {
     let mut path = [0u16; MAX_PATH as usize];
-    GetModuleFileNameW(instance, &mut path);
-    String::from_utf16_lossy(&path)
+    let len = GetModuleFileNameW(instance, &mut path);
+    String::from_utf16_lossy(&path[..len as usize])
 }
