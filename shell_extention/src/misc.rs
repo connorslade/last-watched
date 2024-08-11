@@ -17,10 +17,6 @@ pub fn to_pcstr(s: &str) -> Vec<u8> {
     s.bytes().chain(iter::once(0)).collect()
 }
 
-pub fn to_pcwstr(s: &str) -> Vec<u16> {
-    s.encode_utf16().chain(iter::once(0)).collect()
-}
-
 pub unsafe fn get_module_path(instance: HINSTANCE) -> String {
     let mut path = [0u16; MAX_PATH as usize];
     let len = GetModuleFileNameW(instance, &mut path);

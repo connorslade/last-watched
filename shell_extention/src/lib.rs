@@ -19,8 +19,6 @@ mod registry;
 use misc::get_module_path;
 use provider_factory::WatchedOverlayFactory;
 
-const VIDEO_EXTENSIONS: &[&str] = &["mp4", "mkv", "avi", "webm", "flv", "mov", "wmv"];
-
 // {172d5af2-6916-48d3-a611-368273076434}
 pub const OVERLAY_CLSID: GUID = GUID::from_u128(0x172d5af2_6916_48d3_a611_368273076434);
 

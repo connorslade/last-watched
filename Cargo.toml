@@ -1,5 +1,5 @@
 [workspace]
-members = ["cli", "shell_extention"]
+members = ["cli", "common", "shell_extention"]
 resolver = "2"
 
 [workspace.dependencies]

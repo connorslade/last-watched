@@ -4,21 +4,14 @@ use windows::{
     core::{implement, Error, Result, PCWSTR, PWSTR},
     Win32::{
         Foundation::{ERROR_INSUFFICIENT_BUFFER, S_FALSE},
-        Storage::FileSystem::{
-            GetFileAttributesW, SetFileAttributesW, FILE_ATTRIBUTE_HIDDEN,
-            FILE_FLAGS_AND_ATTRIBUTES,
-        },
         UI::Shell::{
             IShellIconOverlayIdentifier, IShellIconOverlayIdentifier_Impl, ISIOI_ICONFILE,
         },
     },
 };
 
-use crate::{
-    log,
-    misc::{get_module_path, to_pcwstr},
-    INSTANCE, VIDEO_EXTENSIONS,
-};
+use crate::{log, misc::get_module_path, INSTANCE};
+use common::{winapi::ensure_hidden, VIDEO_EXTENSIONS};
 
 #[implement(IShellIconOverlayIdentifier)]
 pub struct WatchedOverlay;
@@ -48,20 +41,7 @@ impl IShellIconOverlayIdentifier_Impl for WatchedOverlay_Impl {
         }
 
         // Make sure the sidecar is hidden
-        unsafe {
-            let string = to_pcwstr(&sidecar.to_string_lossy());
-            let pcwstr = PCWSTR(string.as_ptr());
-
-            let attributes = GetFileAttributesW(pcwstr);
-            let is_hidden = attributes & FILE_ATTRIBUTE_HIDDEN.0 != 0;
-
-            if !is_hidden {
-                SetFileAttributesW(
-                    pcwstr,
-                    FILE_FLAGS_AND_ATTRIBUTES(attributes) | FILE_ATTRIBUTE_HIDDEN,
-                )?;
-            }
-        }
+        let _ = ensure_hidden(&sidecar);
 
         // TODO: cache the content
         let file = fs::read_to_string(sidecar)?;

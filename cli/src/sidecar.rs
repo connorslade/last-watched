@@ -5,8 +5,7 @@ use std::{
 };
 
 use anyhow::{Context, Result};
-
-use crate::winapi::ensure_hidden;
+use common::winapi::ensure_hidden;
 
 pub struct Sidecar {
     file: File,
@@ -58,7 +57,7 @@ impl Sidecar {
 
 pub fn open_sidecar(path: &Path) -> Option<Result<File>> {
     let sidecar = path.parent()?.join(".watched");
-    let _ = unsafe { ensure_hidden(&sidecar) };
+    let _ = ensure_hidden(&sidecar);
 
     sidecar.exists().then(|| {
         match OpenOptions::new()
@@ -79,7 +78,7 @@ pub fn open_or_create_sidecar(path: &Path) -> Result<File> {
         .parent()
         .context("Can't open sidecar for root directory")?
         .join(".watched");
-    let _ = unsafe { ensure_hidden(&sidecar) };
+    let _ = ensure_hidden(&sidecar);
 
     Ok(OpenOptions::new()
         .create(true)

@@ -1,10 +1,8 @@
 [package]
-name = "cli"
+name = "common"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 anyhow.workspace = true
-clap.workspace = true
-
-common = { path = "../common" }
+windows.workspace = true

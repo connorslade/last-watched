@@ -13,3 +13,5 @@ guid.workspace = true
 windows.workspace = true
 windows-core.workspace = true
 winreg.workspace = true
+
+common = { path = "../common" }
