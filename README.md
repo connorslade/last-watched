@@ -1,7 +1,7 @@
 # `last-watched`
 
 Easily keep track of what episodes you've watched from ~~pirated TV shows~~ your collection of ripped DVDs.
-This system is implemented as a Windows shell (explorer) extension that displays overlays on watched videos and uses scripts loaded by your video player to mark a video as watched.
+This system is implemented as a Windows shell (explorer) extension that displays overlays on watched video file icons and uses scripts loaded by MPV to mark a video as watched.
 
 ![GrF7AYYsFf](https://github.com/user-attachments/assets/85217e19-cfd2-4af8-b2c6-b5e3b9859394)
 
