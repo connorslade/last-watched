@@ -1,20 +1,37 @@
-use std::{fs, iter, os::windows::ffi::OsStrExt, path::Path};
+use std::{ffi::c_void, fs, iter, os::windows::ffi::OsStrExt, path::Path};
 
 use windows::{
     core::{implement, Error, Result, PCWSTR, PWSTR},
     Win32::{
-        Foundation::{ERROR_INSUFFICIENT_BUFFER, S_FALSE},
+        Foundation::{BOOL, ERROR_INSUFFICIENT_BUFFER, S_FALSE},
+        System::Com::{IClassFactory, IClassFactory_Impl},
         UI::Shell::{
             IShellIconOverlayIdentifier, IShellIconOverlayIdentifier_Impl, ISIOI_ICONFILE,
         },
     },
 };
+use windows_core::{IInspectable, IUnknown, Interface, GUID};
+use winreg::{
+    enums::{HKEY_LOCAL_MACHINE, KEY_ALL_ACCESS},
+    RegKey,
+};
 
-use crate::{log, misc::get_module_path, INSTANCE};
+use crate::{
+    log,
+    misc::get_module_path,
+    registry::{format_guid, register_clsid, unregister_clsid},
+    INSTANCE,
+};
 use common::{winapi::ensure_hidden, VIDEO_EXTENSIONS};
+
+// {172d5af2-6916-48d3-a611-368273076434}
+pub const OVERLAY_CLSID: GUID = GUID::from_u128(0x172d5af2_6916_48d3_a611_368273076434);
 
 #[implement(IShellIconOverlayIdentifier)]
 pub struct WatchedOverlay;
+
+#[implement(IClassFactory)]
+pub struct WatchedOverlayFactory;
 
 enum IsMemberOfResult {
     Member,
@@ -92,6 +109,22 @@ impl IShellIconOverlayIdentifier_Impl for WatchedOverlay_Impl {
     }
 }
 
+impl IClassFactory_Impl for WatchedOverlayFactory_Impl {
+    fn CreateInstance(
+        &self,
+        _punkouter: Option<&IUnknown>,
+        riid: *const GUID,
+        ppvobject: *mut *mut c_void,
+    ) -> Result<()> {
+        let obj = IInspectable::from(WatchedOverlay);
+        unsafe { obj.query(riid, ppvobject).ok() }
+    }
+
+    fn LockServer(&self, _flock: BOOL) -> Result<()> {
+        Ok(())
+    }
+}
+
 impl From<IsMemberOfResult> for Result<()> {
     fn from(result: IsMemberOfResult) -> Result<()> {
         match result {
@@ -99,4 +132,27 @@ impl From<IsMemberOfResult> for Result<()> {
             IsMemberOfResult::NotMember => Err(Error::from_hresult(S_FALSE)),
         }
     }
+}
+
+pub fn register(module_path: &str) -> anyhow::Result<()> {
+    register_clsid(module_path, OVERLAY_CLSID)?;
+
+    let (overlays, _) = RegKey::predef(HKEY_LOCAL_MACHINE).create_subkey(
+        r"Software\Microsoft\Windows\CurrentVersion\Explorer\ShellIconOverlayIdentifiers\LastWatched",
+    )?;
+    overlays.set_value("", &format_guid(&OVERLAY_CLSID))?;
+
+    Ok(())
+}
+
+pub fn unregister() -> anyhow::Result<()> {
+    unregister_clsid(OVERLAY_CLSID)?;
+
+    let overlays = RegKey::predef(HKEY_LOCAL_MACHINE).open_subkey_with_flags(
+        r"Software\Microsoft\Windows\CurrentVersion\Explorer\ShellIconOverlayIdentifiers",
+        KEY_ALL_ACCESS,
+    )?;
+    overlays.delete_subkey_all("LastWatched")?;
+
+    Ok(())
 }

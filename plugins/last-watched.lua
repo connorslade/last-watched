@@ -35,9 +35,6 @@ function on_file_loaded(event)
         return
     end
 
-    -- Message so the user knows the script is working
-    mp.osd_message("Marking as watched")
-
     -- Load the sidecar file
     local sidecar_path = join_paths(folder, ".watched")
     local success, lines = pcall(io.lines, sidecar_path)
@@ -46,11 +43,13 @@ function on_file_loaded(event)
     if success then
         for line in lines do
             if line == file then
+                mp.osd_message("Already watched")
                 return
             end
         end
     end
     
+    mp.osd_message("Marking as watched")
     local sidecar = io.open(sidecar_path, "a+")
     sidecar:write(file .. "\n")
     sidecar:close()

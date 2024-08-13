@@ -1,6 +1,5 @@
 use std::{ffi::c_void, panic, process};
 
-use registry::{register_clsid, unregister_clsid};
 use windows::Win32::{
     Foundation::{CLASS_E_CLASSNOTAVAILABLE, HANDLE, HINSTANCE, MAX_PATH, S_OK},
     System::{
@@ -13,14 +12,13 @@ use windows::Win32::{
 use windows_core::{Interface, GUID, HRESULT};
 
 mod misc;
-mod overlay_provider;
-mod provider_factory;
+mod providers;
 mod registry;
 use misc::get_module_path;
-use provider_factory::WatchedOverlayFactory;
-
-// {172d5af2-6916-48d3-a611-368273076434}
-pub const OVERLAY_CLSID: GUID = GUID::from_u128(0x172d5af2_6916_48d3_a611_368273076434);
+use providers::{
+    context_menu::{self, WatchedContextMenuFactory, CONTEXT_MENU_CLSID},
+    icon_overlay::{self, WatchedOverlayFactory, OVERLAY_CLSID},
+};
 
 static mut INSTANCE: HINSTANCE = HINSTANCE(0 as _);
 
@@ -59,11 +57,11 @@ unsafe extern "system" fn DllGetClassObject(
     riid: *const GUID,
     ppv: *mut *mut c_void,
 ) -> HRESULT {
-    if *rclsid == OVERLAY_CLSID {
-        let factory = IClassFactory::from(WatchedOverlayFactory);
-        factory.query(riid, ppv)
-    } else {
-        CLASS_E_CLASSNOTAVAILABLE
+    log!("DllGetClassObject: {:?}", *rclsid);
+    match *rclsid {
+        OVERLAY_CLSID => IClassFactory::from(WatchedOverlayFactory).query(riid, ppv),
+        CONTEXT_MENU_CLSID => IClassFactory::from(WatchedContextMenuFactory).query(riid, ppv),
+        _ => CLASS_E_CLASSNOTAVAILABLE,
     }
 }
 
@@ -75,14 +73,16 @@ unsafe extern "system" fn DllCanUnloadNow() -> HRESULT {
 #[no_mangle]
 unsafe extern "system" fn DllRegisterServer() -> HRESULT {
     let module_path = get_module_path(INSTANCE);
-    register_clsid(&module_path, OVERLAY_CLSID).unwrap();
+    icon_overlay::register(&module_path).unwrap();
+    context_menu::register(&module_path).unwrap();
     SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, None, None);
     S_OK
 }
 
 #[no_mangle]
 unsafe extern "system" fn DllUnregisterServer() -> HRESULT {
-    unregister_clsid(OVERLAY_CLSID).unwrap();
+    icon_overlay::unregister().unwrap();
+    context_menu::unregister().unwrap();
     SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, None, None);
     S_OK
 }

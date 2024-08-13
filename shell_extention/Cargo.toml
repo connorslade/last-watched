@@ -9,7 +9,6 @@ name = "last_watched"
 
 [dependencies]
 anyhow.workspace = true
-guid.workspace = true
 windows.workspace = true
 windows-core.workspace = true
 winreg.workspace = true
