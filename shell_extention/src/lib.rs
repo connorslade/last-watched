@@ -18,6 +18,7 @@ use misc::get_module_path;
 use providers::{
     context_menu::{self, WatchedContextMenuFactory, CONTEXT_MENU_CLSID},
     icon_overlay::{self, WatchedOverlayFactory, OVERLAY_CLSID},
+    property_store::{self, WatchedPropertyStoreFactory, PROPERTY_STORE_CLSID},
 };
 
 static mut INSTANCE: HINSTANCE = HINSTANCE(0 as _);
@@ -61,6 +62,7 @@ unsafe extern "system" fn DllGetClassObject(
     match *rclsid {
         OVERLAY_CLSID => IClassFactory::from(WatchedOverlayFactory).query(riid, ppv),
         CONTEXT_MENU_CLSID => IClassFactory::from(WatchedContextMenuFactory).query(riid, ppv),
+        PROPERTY_STORE_CLSID => IClassFactory::from(WatchedPropertyStoreFactory).query(riid, ppv),
         _ => CLASS_E_CLASSNOTAVAILABLE,
     }
 }
@@ -75,6 +77,7 @@ unsafe extern "system" fn DllRegisterServer() -> HRESULT {
     let module_path = get_module_path(INSTANCE);
     icon_overlay::register(&module_path).unwrap();
     context_menu::register(&module_path).unwrap();
+    property_store::register(&module_path).unwrap();
     SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, None, None);
     S_OK
 }
@@ -83,6 +86,7 @@ unsafe extern "system" fn DllRegisterServer() -> HRESULT {
 unsafe extern "system" fn DllUnregisterServer() -> HRESULT {
     icon_overlay::unregister().unwrap();
     context_menu::unregister().unwrap();
+    property_store::unregister().unwrap();
     SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, None, None);
     S_OK
 }

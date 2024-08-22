@@ -5,10 +5,10 @@ use std::{
 
 use anyhow::{bail, Context, Result};
 use clap::Parser;
-use common::VIDEO_EXTENSIONS;
-use sidecar::{open_or_create_sidecar, open_sidecar, Sidecar};
-
-mod sidecar;
+use common::{
+    sidecar::{open_or_create_sidecar, open_sidecar, Sidecar},
+    VIDEO_EXTENSIONS,
+};
 
 #[derive(Parser)]
 pub enum Cli {

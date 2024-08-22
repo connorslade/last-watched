@@ -5,7 +5,8 @@ use std::{
 };
 
 use anyhow::{Context, Result};
-use common::winapi::ensure_hidden;
+
+use crate::winapi::ensure_hidden;
 
 pub struct Sidecar {
     file: File,
