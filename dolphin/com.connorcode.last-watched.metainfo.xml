@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<component type="addon">
+  <id>com.connorcode.last-watched</id>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-2.0+</project_license>
+  <extends>org.kde.dolphin.desktop</extends>
+  <name>Last Watched</name>
+  <summary
+    >Dolphin integration for revision control systems, Dropbox, and disk images</summary>
+  <description>
+    <p
+        >These plugins integrate Dolphin with the revision control systems Bazaar, Mercurial and Git.  A Dropbox plugin gives action items to keep your files synced to the Dropbox service. A disk image integration plugin adds a mount or unmount action.</p>
+  </description>
+  <url type="homepage">https://www.kde.org</url>
+  <url
+        type="bugtracker"
+    >https://bugs.kde.org/enter_bug.cgi?format=guided&amp;product=dolphin</url>
+  <screenshots>
+    <screenshot type="default">
+      <image
+                type="source"
+            >https://cdn.kde.org/screenshots/dolphin-plugins/dolphin-plugins.png</image>
+    </screenshot>
+  </screenshots>
+  <project_group>KDE</project_group>
+  <categories>
+    <category>System</category>
+  </categories>
+  <icon type="stock">system-file-manager</icon>
+  <releases>
+    <release version="25.04.3" date="2025-07-03" />
+    <release version="25.04.2" date="2025-06-05" />
+    <release version="25.04.1" date="2025-05-08" />
+    <release version="25.04.0" date="2025-04-17" />
+    <release version="24.12.3" date="2025-03-06" />
+    <release version="24.12.2" date="2025-02-06" />
+    <release version="24.12.1" date="2025-01-09" />
+    <release version="24.12.0" date="2024-12-12" />
+    <release version="24.08.3" date="2024-11-07" />
+    <release version="24.08.2" date="2024-10-10" />
+    <release version="24.08.1" date="2024-09-12" />
+    <release version="24.08.0" date="2024-08-22" />
+    <release version="24.05.2" date="2024-07-04" />
+    <release version="24.05.1" date="2024-06-13" />
+    <release version="24.05.0" date="2024-05-23" />
+    <release version="24.02.2" date="2024-04-11" />
+    <release version="24.02.1" date="2024-03-21" />
+    <release version="24.02.0" date="2024-02-28" />
+    <release version="23.08.5" date="2024-02-15" />
+  </releases>
+</component>
