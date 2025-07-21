@@ -29,20 +29,11 @@ include(FeatureSummary)
 
 find_package(Qt6 ${QT_MIN_VERSION} REQUIRED COMPONENTS
     Core
-    Widgets
-    Network
-    DBus
-    Concurrent
 )
 
 find_package(KF6 ${KF_MIN_VERSION} REQUIRED COMPONENTS
     XmlGui
     I18n
-    KIO
-    TextWidgets
-    Config
-    CoreAddons
-    Solid
 )
 
 find_package(DolphinVcs REQUIRED)
@@ -71,7 +62,6 @@ target_link_libraries(lastwatchedplugin
     KF6::KIOCore
     DolphinVcs
 )
-
 
 install(FILES com.connorcode.last-watched.metainfo.xml
         DESTINATION ${KDE_INSTALL_METAINFODIR})

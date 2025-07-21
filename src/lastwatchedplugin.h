@@ -3,23 +3,13 @@
 #include <Dolphin/KVersionControlPlugin>
 
 #include <QMap>
+#include <kfileitem.h>
 
 class QLocalSocket;
 
 class LastWatchedPlugin : public KVersionControlPlugin
 {
     Q_OBJECT
-
-private:
-    enum SendCommandMode {
-        WaitForReply,
-        SendCommandOnly,
-    };
-
-    enum SendCommandTimeout {
-        ShortTimeout,
-        LongTimeout,
-    };
 
 public:
     LastWatchedPlugin(QObject *parent, const QVariantList &args);
@@ -40,6 +30,4 @@ private Q_SLOTS:
 private:
     class Private;
     Private *const d;
-
-    static QMap<QString, KVersionControlPlugin::ItemVersion> m_itemVersions;
 };
