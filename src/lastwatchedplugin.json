@@ -1,0 +1,7 @@
+{
+  "KPlugin": {
+    "MimeTypes": ["text/plain"],
+    "Name": "Last Watched"
+  },
+  "MimeType": "text/plain;"
+}
