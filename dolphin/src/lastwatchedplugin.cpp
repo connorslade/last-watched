@@ -4,9 +4,8 @@
 #include <KFileItem>
 #include <KPluginFactory>
 #include <QPointer>
-#include <kfileitem.h>
-#include <qcontainerfwd.h>
-#include <qstringliteral.h>
+#include <QStringLiteral>
+#include <QtContainerFwd>
 
 K_PLUGIN_CLASS_WITH_JSON(LastWatchedPlugin, "lastwatchedplugin.json")
 
