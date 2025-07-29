@@ -26,4 +26,4 @@ To get to see the changed take effect, try restarting Windows Explorer with Task
 ## How it Works
 
 When you play a video file, the plugin for your video player will add the video's file name to a hidden `.watched` file in the same directory, creating it if it doesn't exist.
-Then, when the shell / explorer comes across a video file (mp4, mkv, avi, webm, flv, mov, wmv) the last-watched plugin will check for the watched sidecar file and add the icon if needed.
+Then, when the shell / explorer comes across a video file (mp4, mkv, m4v, avi, webm, flv, mov, wmv) the last-watched plugin will check for the watched sidecar file and add the icon if needed.

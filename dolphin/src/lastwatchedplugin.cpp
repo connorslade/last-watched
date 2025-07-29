@@ -9,7 +9,7 @@
 
 K_PLUGIN_CLASS_WITH_JSON(LastWatchedPlugin, "lastwatchedplugin.json")
 
-const QList<std::string> VIDEO_EXTENSIONS = {"mp4", "mkv", "avi", "webm", "flv", "mov", "wmv"};
+const QList<std::string> VIDEO_EXTENSIONS = {"mp4", "mkv", "m4v", "avi", "webm", "flv", "mov", "wmv"};
 const QString ACTION_MARK_WATCHED = QStringLiteral("mark-watched");
 const QString ACTION_MARK_UNWATCHED = QStringLiteral("mark-unwatched");
 

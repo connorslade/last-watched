@@ -1,4 +1,4 @@
-local VIDEO_EXTENSIONS = { "mp4", "mkv", "avi", "webm", "flv", "mov", "wmv" }
+local VIDEO_EXTENSIONS = { "mp4", "mkv", "m4v", "avi", "webm", "flv", "mov", "wmv" }
 
 local function is_video_file(file)
     local extention = file:match("^.+%.(.+)$")
